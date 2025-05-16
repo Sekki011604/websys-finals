@@ -19,6 +19,20 @@ if ($stmt = $conn->prepare($sql)) {
     if ($stmt->execute()) {
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
+            // Fetch product names for this order
+            $order_id = $row['id'];
+            $product_names = [];
+            $sql_items = "SELECT product_name_snapshot FROM order_items WHERE order_id = ?";
+            if ($stmt_items = $conn->prepare($sql_items)) {
+                $stmt_items->bind_param("i", $order_id);
+                $stmt_items->execute();
+                $result_items = $stmt_items->get_result();
+                while ($item = $result_items->fetch_assoc()) {
+                    $product_names[] = $item['product_name_snapshot'];
+                }
+                $stmt_items->close();
+            }
+            $row['product_names'] = $product_names;
             $orders[] = $row;
         }
     } else {
@@ -79,7 +93,7 @@ if ($stmt = $conn->prepare($sql)) {
                             <table class="table table-hover align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Order ID</th>
+                                        <th>Product Name</th>
                                         <th>Date</th>
                                         <th class="text-end">Total</th>
                                         <th>Status</th>
@@ -89,7 +103,9 @@ if ($stmt = $conn->prepare($sql)) {
                                 <tbody>
                                     <?php foreach ($orders as $order): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($order['id']); ?></td>
+                                            <td>
+                                                <?php echo htmlspecialchars(implode(', ', $order['product_names'])); ?>
+                                            </td>
                                             <td><?php echo date("M d, Y h:i A", strtotime($order['date_ordered'])); ?></td>
                                             <td class="text-end">₱<?php echo number_format($order['total_amount'], 2); ?></td>
                                             <td>

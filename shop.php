@@ -122,7 +122,7 @@ include_once __DIR__ . '/includes/header.php';
                     echo '    <div class="card-body d-flex flex-column">';
                     echo '      <h6 class="card-title mb-1"><a href="product_detail.php?slug='.htmlspecialchars($product['slug']).'" class="text-decoration-none text-dark">'.htmlspecialchars($product['name']).'</a></h6>';
                     echo '      <p class="card-text text-muted mb-2 mt-auto">₱'.number_format($product['price'], 2).'</p>';
-                    echo '      <a href="cart.php?action=add&id='.$product['id'].'" class="btn btn-primary btn-sm auth-btn mt-2">Add to Cart</a>';
+                    echo '      <a href="#" data-id="'.htmlspecialchars($product['id']).'" class="btn btn-primary btn-sm auth-btn mt-2 add-to-cart-btn">Add to Cart</a>';
                     echo '    </div>';
                     echo '  </div>';
                     echo '</div>';
@@ -134,5 +134,29 @@ include_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 </div>
+
+<div id="cart-message" style="position:fixed;top:30px;right:30px;z-index:9999;display:none;" class="alert"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var productId = this.getAttribute('data-id');
+            fetch('add_to_cart.php?id=' + encodeURIComponent(productId))
+                .then(response => response.json())
+                .then(data => {
+                    var msgDiv = document.getElementById('cart-message');
+                    msgDiv.textContent = data.message;
+                    msgDiv.className = 'alert ' + (data.success ? 'alert-success' : 'alert-danger');
+                    msgDiv.style.display = 'block';
+                    setTimeout(function() {
+                        msgDiv.style.display = 'none';
+                    }, 2000);
+                });
+        });
+    });
+});
+</script>
 
 <?php include_once __DIR__ . '/includes/footer.php'; ?> 

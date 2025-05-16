@@ -49,7 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_paid_order_id']))
 
 // Fetch orders from DB
 $where = '';
-if ($filter_status !== 'all' && in_array($filter_status, $order_statuses)) {
+if ($filter_status === 'pending_payment') {
+    $where = "WHERE o.payment_status = 'pending'";
+} elseif ($filter_status !== 'all' && in_array($filter_status, $order_statuses)) {
     $where = "WHERE o.order_status = '" . $conn->real_escape_string($filter_status) . "'";
 }
 $sql = "SELECT o.*, u.email as user_email FROM orders o LEFT JOIN user u ON o.user_id = u.id $where ORDER BY o.date_ordered DESC";

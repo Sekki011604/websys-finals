@@ -263,6 +263,71 @@ foreach ($cart_items as $item) {
 }
 ?>
 
+<style>
+.cart-table th, .cart-table td {
+    vertical-align: middle !important;
+}
+.cart-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+.cart-table img {
+    max-height: 60px;
+    border-radius: 8px;
+}
+.cart-table .form-control-sm {
+    width: 60px;
+    display: inline-block;
+    margin-right: 8px;
+}
+.cart-table .save-btn {
+    background: #a259e6;
+    border: none;
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 16px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+.cart-table .save-btn:hover {
+    background: #7c3aed;
+}
+.cart-table .delete-btn {
+    background: #ff4d4f;
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: background 0.2s;
+}
+.cart-table .delete-btn:hover {
+    background: #d9363e;
+}
+.cart-table .form-check-input {
+    width: 1.3em;
+    height: 1.3em;
+    margin-top: 0;
+}
+.selected-total-row {
+    background: #f8f9fa;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+@media (max-width: 768px) {
+    .cart-table th, .cart-table td {
+        font-size: 0.95rem;
+        padding: 0.5rem;
+    }
+    .cart-table img {
+        max-height: 40px;
+    }
+}
+</style>
+
 <div class="admin-page">
     <div class="container py-5">
         <h1 class="gradient-text mb-4">Shopping Cart</h1>
@@ -283,59 +348,65 @@ foreach ($cart_items as $item) {
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
                     <div class="table-responsive">
-                        <table class="table align-middle mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th scope="col" colspan="2">Product</th>
-                                    <th scope="col" class="text-center">Price</th>
-                                    <th scope="col" class="text-center">Quantity</th>
-                                    <th scope="col" class="text-end">Total</th>
-                                    <th scope="col" class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($cart_items as $item): ?>
+                        <form action="checkout.php" method="GET" id="checkoutForm">
+                            <table class="table align-middle mb-0 cart-table">
+                                <thead class="bg-light">
                                     <tr>
-                                        <td style="width: 80px;">
-                                            <img src="<?php echo htmlspecialchars($item['image']); ?>" 
-                                                 alt="<?php echo htmlspecialchars($item['name']); ?>" 
-                                                 class="img-fluid rounded" 
-                                                 style="max-height: 80px; object-fit: contain;">
-                                        </td>
-                                        <td>
-                                            <h6 class="mb-0"><?php echo htmlspecialchars($item['name']); ?></h6>
-                                        </td>
-                                        <td class="text-center">₱<?php echo number_format($item['price'], 2); ?></td>
-                                        <td class="text-center" style="min-width: 150px;">
-                                            <form action="cart.php" method="POST" class="d-inline-flex align-items-center">
-                                                <input type="hidden" name="action" value="update">
-                                                <input type="hidden" name="id" value="<?php echo $item['id']; ?>">
-                                                <input type="number" name="quantity" value="<?php echo $item['quantity']; ?>" 
-                                                       class="form-control form-control-sm" style="width: 70px;" min="1">
-                                                <button type="submit" class="btn btn-primary btn-sm ms-2">
-                                                    <i class="bi bi-save me-1"></i>Save
-                                                </button>
-                                            </form>
-                                        </td>
-                                        <td class="text-end fw-bold">₱<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
-                                        <td class="text-center">
-                                            <a href="cart.php?action=remove&id=<?php echo $item['id']; ?>" 
-                                               class="btn btn-danger btn-sm" 
-                                               onclick="return confirm('Are you sure you want to remove this item?')">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </td>
+                                        <th scope="col" class="text-center">Select</th>
+                                        <th scope="col" colspan="2">Product</th>
+                                        <th scope="col" class="text-center">Price</th>
+                                        <th scope="col" class="text-center">Quantity</th>
+                                        <th scope="col" class="text-end">Total</th>
+                                        <th scope="col" class="text-center">Action</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                            <tfoot class="bg-light">
-                                <tr>
-                                    <td colspan="4" class="text-end fw-bold">Grand Total:</td>
-                                    <td class="text-end fw-bold h5 mb-0">₱<?php echo number_format($cart_total, 2); ?></td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($cart_items as $item): ?>
+                                        <tr>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="selected_items[]" value="<?php echo $item['id']; ?>" class="form-check-input item-checkbox">
+                                            </td>
+                                            <td style="width: 80px;">
+                                                <img src="<?php echo htmlspecialchars($item['image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($item['name']); ?>" 
+                                                     class="img-fluid rounded" 
+                                                     style="max-height: 80px; object-fit: contain;">
+                                            </td>
+                                            <td>
+                                                <h6 class="mb-0"><?php echo htmlspecialchars($item['name']); ?></h6>
+                                            </td>
+                                            <td class="text-center">₱<?php echo number_format($item['price'], 2); ?></td>
+                                            <td class="text-center" style="min-width: 150px;">
+                                                <form action="cart.php" method="POST" class="d-flex align-items-center gap-2 mb-0">
+                                                    <input type="hidden" name="action" value="update">
+                                                    <input type="hidden" name="id" value="<?php echo $item['id']; ?>">
+                                                    <input type="number" name="quantity" value="<?php echo $item['quantity']; ?>" 
+                                                           class="form-control form-control-sm" min="1">
+                                                    <button type="submit" class="save-btn">
+                                                        <i class="bi bi-save me-1"></i>Save
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td class="text-end fw-bold item-total">₱<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
+                                            <td class="text-center">
+                                                <a href="cart.php?action=remove&id=<?php echo $item['id']; ?>" 
+                                                   class="delete-btn" 
+                                                   onclick="return confirm('Are you sure you want to remove this item?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                                <tfoot class="bg-light selected-total-row">
+                                    <tr>
+                                        <td colspan="5" class="text-end">Selected Total:</td>
+                                        <td class="text-end h5 mb-0" id="selectedTotal">₱0.00</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -344,13 +415,41 @@ foreach ($cart_items as $item) {
                 <a href="shop.php" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Continue Shopping
                 </a>
-                <a href="checkout.php" class="btn btn-primary auth-btn">
+                <button type="submit" form="checkoutForm" class="btn btn-primary auth-btn" id="checkoutBtn" disabled>
                     <i class="bi bi-bag-check me-2"></i>Proceed to Checkout
-                </a>
+                </button>
             </div>
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const selectedTotal = document.getElementById('selectedTotal');
+    const cartItems = <?php echo json_encode($cart_items); ?>;
+
+    function updateSelectedTotal() {
+        let total = 0;
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const itemId = checkbox.value;
+                const item = cartItems[itemId];
+                if (item) {
+                    total += item.price * item.quantity;
+                }
+            }
+        });
+        selectedTotal.textContent = '₱' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        checkoutBtn.disabled = total === 0;
+    }
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedTotal);
+    });
+});
+</script>
 
 <?php
 include_once __DIR__ . '/includes/footer.php';

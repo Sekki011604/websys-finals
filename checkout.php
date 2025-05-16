@@ -15,7 +15,23 @@ if (empty($_SESSION['cart'])) {
     exit;
 }
 
-$cart_items = $_SESSION['cart'];
+// Get selected items from GET or POST
+$selected_items = [];
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['selected_items'])) {
+    $selected_items = $_GET['selected_items'];
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_items'])) {
+    $selected_items = $_POST['selected_items'];
+}
+if (empty($selected_items)) {
+    header('Location: cart.php?message=Please select items to checkout.');
+    exit;
+}
+
+// Filter cart items to only include selected items
+$cart_items = array_filter($_SESSION['cart'], function($item) use ($selected_items) {
+    return in_array($item['id'], $selected_items);
+});
+
 $cart_total = 0;
 foreach ($cart_items as $item) {
     $cart_total += $item['price'] * $item['quantity'];
@@ -39,7 +55,8 @@ if (isset($_SESSION['user_id'])) {
     $shipping_address = $result->fetch_assoc();
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Only place order if 'place_order' is set in POST
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['place_order'])) {
     try {
         // Start transaction
         $conn->begin_transaction();
@@ -117,10 +134,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $conn->prepare($update_stock_sql);
             $stmt->bind_param("ii", $quantity, $product_id);
             $stmt->execute();
-        }
 
-        // Clear cart
-        $_SESSION['cart'] = [];
+            // Remove the ordered items from cart (session)
+            unset($_SESSION['cart'][$product_id]);
+
+            // Remove the ordered items from cart_items table
+            if (isLoggedIn()) {
+                $delete_cart_sql = "DELETE FROM cart_items WHERE user_id = ? AND product_id = ?";
+                $stmt = $conn->prepare($delete_cart_sql);
+                $stmt->bind_param("ii", $user_id, $product_id);
+                $stmt->execute();
+            } else {
+                $session_id = session_id();
+                $delete_cart_sql = "DELETE FROM cart_items WHERE session_id = ? AND product_id = ?";
+                $stmt = $conn->prepare($delete_cart_sql);
+                $stmt->bind_param("si", $session_id, $product_id);
+                $stmt->execute();
+            }
+        }
 
         // Commit transaction
         $conn->commit();
@@ -164,6 +195,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <hr>
                     <h4>Payment Method</h4>
                     <form action="checkout.php" method="POST" class="mt-4">
+                        <?php foreach ($selected_items as $id): ?>
+                            <input type="hidden" name="selected_items[]" value="<?php echo htmlspecialchars($id); ?>">
+                        <?php endforeach; ?>
+                        <input type="hidden" name="place_order" value="1">
                         <div class="mb-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="payment_method" id="pickup" value="Pick Up" required <?php if($selected_payment_method==="Pick Up") echo 'checked'; ?>>

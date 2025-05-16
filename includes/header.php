@@ -65,6 +65,7 @@ $page_title = getSetting('site_name', '2nd Phone Shop'); // Default title from s
                 $dashboard_link = (strpos($_SERVER['REQUEST_URI'], '/user/') !== false) ? 'dashboard.php' : ( (strpos($_SERVER['REQUEST_URI'], '/admin/') !== false) ? '../user/dashboard.php' : 'user/dashboard.php');
                 $admin_dashboard_link = '/websys-finals/admin/index.php';
                 $logout_link = (strpos($_SERVER['REQUEST_URI'], '/login/') !== false || strpos($_SERVER['REQUEST_URI'], '/user/') !== false || strpos($_SERVER['REQUEST_URI'], '/admin/') !== false) ? '../logout.php' : 'logout.php';
+                $profile_settings_link = (strpos($_SERVER['REQUEST_URI'], '/user/') !== false) ? 'profile.php?section=settings' : 'user/profile.php?section=settings';
             ?>
             <li class="nav-item"><a class="nav-link <?php if($current_page === 'index.php') echo 'active fw-bold text-primary rounded-pill px-3'; ?>" href="<?php echo $home_link; ?>" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Home</a></li>
             <li class="nav-item"><a class="nav-link <?php if($current_page === 'about.php') echo 'active fw-bold text-primary rounded-pill px-3'; ?>" href="<?php echo $about_link; ?>" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">About</a></li>
@@ -78,8 +79,7 @@ $page_title = getSetting('site_name', '2nd Phone Shop'); // Default title from s
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="navbarDropdownUserLink">
                     <li><a class="dropdown-item" href="<?php echo $dashboard_link; ?>"><i class="bi bi-speedometer2 me-2"></i>My Dashboard</a></li>
-                    <li><a class="dropdown-item" href="<?php echo $dashboard_link; ?>?page=orders"><i class="bi bi-box-seam me-2"></i>My Orders</a></li>
-                    <li><a class="dropdown-item" href="<?php echo $dashboard_link; ?>?page=settings"><i class="bi bi-gear me-2"></i>Account Settings</a></li>
+                    <li><a class="dropdown-item" href="<?php echo $profile_settings_link; ?>"><i class="bi bi-gear me-2"></i>Account Settings</a></li>
                     <?php if (isAdmin()): ?>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="<?php echo $admin_dashboard_link; ?>"><i class="bi bi-shield-lock me-2"></i>Admin Panel</a></li>
