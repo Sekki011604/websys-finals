@@ -63,7 +63,7 @@ $page_title = getSetting('site_name', '2nd Phone Shop'); // Default title from s
                 $login_link = (strpos($_SERVER['REQUEST_URI'], '/login/') !== false) ? 'login.php' : ( (strpos($_SERVER['REQUEST_URI'], '/user/') !== false || strpos($_SERVER['REQUEST_URI'], '/admin/') !== false) ? '../login/login.php' : 'login/login.php');
                 $register_link = (strpos($_SERVER['REQUEST_URI'], '/login/') !== false) ? '../register.php' : ( (strpos($_SERVER['REQUEST_URI'], '/user/') !== false || strpos($_SERVER['REQUEST_URI'], '/admin/') !== false) ? '../register.php' : 'register.php');
                 $dashboard_link = (strpos($_SERVER['REQUEST_URI'], '/user/') !== false) ? 'dashboard.php' : ( (strpos($_SERVER['REQUEST_URI'], '/admin/') !== false) ? '../user/dashboard.php' : 'user/dashboard.php');
-                $admin_dashboard_link = (strpos($_SERVER['REQUEST_URI'], '/admin/') !== false) ? 'index.php' : 'admin/index.php';
+                $admin_dashboard_link = '/websys-finals/admin/index.php';
                 $logout_link = (strpos($_SERVER['REQUEST_URI'], '/login/') !== false || strpos($_SERVER['REQUEST_URI'], '/user/') !== false || strpos($_SERVER['REQUEST_URI'], '/admin/') !== false) ? '../logout.php' : 'logout.php';
             ?>
             <li class="nav-item"><a class="nav-link <?php if($current_page === 'index.php') echo 'active fw-bold text-primary rounded-pill px-3'; ?>" href="<?php echo $home_link; ?>" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Home</a></li>

@@ -70,6 +70,9 @@ $active_section = isset($_GET['page']) ? $_GET['page'] : 'overview';
                     <a class="nav-link" href="orders.php" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         <i class="bi bi-box-seam me-2"></i>My Orders
                     </a>
+                    <a class="nav-link" href="addresses.php" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <i class="bi bi-geo-alt me-2"></i>Manage Addresses
+                    </a>
                     <a class="nav-link" href="profile.php" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         <i class="bi bi-person-badge me-2"></i>My Profile
                     </a>
@@ -143,6 +146,9 @@ $active_section = isset($_GET['page']) ? $_GET['page'] : 'overview';
                     <div class="d-flex gap-2">
                         <a href="orders.php" class="btn btn-primary">
                             <i class="bi bi-box-seam me-2"></i>View All Orders
+                        </a>
+                        <a href="addresses.php" class="btn btn-outline-primary">
+                            <i class="bi bi-geo-alt me-2"></i>Manage Addresses
                         </a>
                         <a href="profile.php" class="btn btn-outline-primary">
                             <i class="bi bi-person me-2"></i>Update Profile

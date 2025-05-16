@@ -44,6 +44,9 @@ if ($stmt = $conn->prepare($sql)) {
                     <a class="nav-link active" href="orders.php" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         <i class="bi bi-box-seam me-2"></i>My Orders
                     </a>
+                    <a class="nav-link" href="addresses.php" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <i class="bi bi-geo-alt me-2"></i>Manage Addresses
+                    </a>
                     <a class="nav-link" href="profile.php" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         <i class="bi bi-person-badge me-2"></i>My Profile
                     </a>

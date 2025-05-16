@@ -33,6 +33,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_order_status']
         $error_message = "Invalid status.";
     }
 }
+// Handle payment status update for COD
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_paid_order_id'])) {
+    $order_id = intval($_POST['set_paid_order_id']);
+    $sql = "UPDATE orders SET payment_status = 'paid' WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $order_id);
+    if ($stmt->execute()) {
+        $feedback_message = "Payment status set to PAID.";
+    } else {
+        $error_message = "Failed to update payment status.";
+    }
+    $stmt->close();
+}
 
 // Fetch orders from DB
 $where = '';
@@ -109,7 +122,19 @@ if ($res && $res->num_rows) {
                                                     <button type="submit" name="update_order_status" class="btn btn-sm btn-outline-primary ms-2"><i class="bi bi-check-lg"></i></button>
                                                 </form>
                                             </td>
-                                            <td><span class="badge bg-<?php echo strtolower($order['payment_status']) === 'paid' ? 'success' : (strtolower($order['payment_status']) === 'pending' ? 'warning' : (strtolower($order['payment_status']) === 'refunded' ? 'secondary' : 'info')); ?>"><?php echo ucwords(str_replace('_', ' ', $order['payment_status'])); ?></span></td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <span class="badge bg-<?php echo strtolower($order['payment_status']) === 'paid' ? 'success' : (strtolower($order['payment_status']) === 'pending' ? 'warning' : (strtolower($order['payment_status']) === 'refunded' ? 'secondary' : 'info')); ?>">
+                                                        <?php echo ucwords(str_replace('_', ' ', $order['payment_status'])); ?>
+                                                    </span>
+                                                    <?php if ($order['payment_method'] === 'Cash on Delivery' && $order['payment_status'] === 'pending'): ?>
+                                                        <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to mark this order as paid?');">
+                                                            <input type="hidden" name="set_paid_order_id" value="<?php echo $order['id']; ?>">
+                                                            <button type="submit" class="btn btn-success btn-sm ms-2" title="Confirm payment received"> <i class="bi bi-cash-coin"></i> Mark as Paid</button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
                                             <td class="text-center">
                                                 <a href="../user/order_detail.php?order_id=<?php echo htmlspecialchars($order['id']); ?>" class="btn btn-sm btn-outline-info" title="View Details"><i class="bi bi-eye"></i></a>
                                             </td>
